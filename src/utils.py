@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold, train_test_split
+from typing import List, Dict
 
 def convert_non_numeric_to_numeric(data:pd.DataFrame) -> pd.DataFrame:
     """
@@ -26,7 +27,7 @@ def convert_non_numeric_to_numeric(data:pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def get_kfold_data(data:pd.DataFrame, k:int, reproducibility_seed:int=42):
+def get_kfold_data(data:pd.DataFrame, k:int, reproducibility_seed:int=42) -> List[Dict[str, pd.DataFrame]]:
     """
     Splits the data into k-folds for cross-validation.
 
