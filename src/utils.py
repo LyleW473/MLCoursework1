@@ -2,6 +2,30 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold, train_test_split
 
+def convert_non_numeric_to_numeric(data:pd.DataFrame) -> pd.DataFrame:
+    """
+    Converts non-numeric columns in a DataFrame to numeric
+    using a mix of one-hot encoding and ordinal encoding.
+
+    Args:
+        data (pd.DataFrame): The DataFrame containing the data to convert.
+    """
+    colours = data["color"].value_counts().index.tolist()
+    print(colours)
+
+    for colour in colours:
+        data[f"colour_{colour}"] = data["color"].apply(lambda x: 1 if x == colour else 0)
+    data.drop("color", axis=1, inplace=True)
+
+    quality_mappings = {"Ideal": 0, "Premium": 1, "Very Good": 2, "Good": 3, "Fair": 4}
+    data["cut"] = data["cut"].map(quality_mappings)
+
+    clarity_mappings = {"IF": 0, "VVS1": 1, "VVS2": 2, "VS1": 3, "VS2": 4, "SI1": 5, "SI2": 6, "I1": 7}
+    data["clarity"] = data["clarity"].map(clarity_mappings)
+    print(data)
+    return data
+
+
 def get_kfold_data(data:pd.DataFrame, k:int, reproducibility_seed:int=42):
     """
     Splits the data into k-folds for cross-validation.
