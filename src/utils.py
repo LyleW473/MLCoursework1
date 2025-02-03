@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import KFold, train_test_split
 
 def get_kfold_data(data:pd.DataFrame, k:int, reproducibility_seed:int=42):
+    """
+    Splits the data into k-folds for cross-validation.
+
+    Args:
+        data (pd.DataFrame): The data to split.
+        k (int): The number of folds to split the data into.
+        reproducibility_seed (int): The seed to use for reproducibility.
+    """
     kfold_split = KFold(n_splits=k, shuffle=True, random_state=reproducibility_seed)
 
     kfold_data = []
