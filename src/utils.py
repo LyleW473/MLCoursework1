@@ -24,8 +24,9 @@ def calculate_metrics(targets:np.ndarray, preds:np.ndarray) -> Dict[str, float]:
     temp_outputs = np.array(preds).flatten()
     temp_targets = np.array(targets).flatten()
     pcc, _ = pearsonr(temp_outputs, temp_targets)
-    spearman_r = spearmanr(temp_outputs, temp_targets)[0]
-    r2_score = calculate_r2_score(y_pred=preds, y_true=targets)
+    pcc = pcc.item()
+    spearman_r = spearmanr(temp_outputs, temp_targets)[0].item()
+    r2_score = calculate_r2_score(y_pred=preds, y_true=targets).item()
     
     metrics = {
             "mae": mae,
