@@ -5,6 +5,38 @@ import numpy as np
 from sklearn.model_selection import KFold, train_test_split
 from typing import List, Dict
 
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+from scipy.stats import pearsonr, spearmanr
+
+def calculate_metrics(targets:np.ndarray, preds:np.ndarray) -> Dict[str, float]:
+    """
+    Calculates the Mean Absolute Error, Mean Squared Error, Root Mean Squared Error,
+    Pearson Correlation Coefficient and Spearman Rank Correlation Coefficient of a model.
+
+    Args:
+        targets (np.ndarray): The true values.
+        preds (np.ndarray): The predicted values.
+    """
+    mae = mean_absolute_error(y_true=targets, y_pred=preds)
+    mse = mean_squared_error(y_true=targets, y_pred=preds)
+    rmse = np.sqrt(mse).item()
+    
+    temp_outputs = np.array(preds).flatten()
+    temp_targets = np.array(targets).flatten()
+    pcc, _ = pearsonr(temp_outputs, temp_targets)
+    spearman_r = spearmanr(temp_outputs, temp_targets)[0]
+    r2_score = calculate_r2_score(y_pred=preds, y_true=targets)
+    
+    metrics = {
+            "mae": mae,
+            "mse": mse,
+            "rmse": rmse,
+            "pcc": pcc,
+            "spearman_r": spearman_r,
+            "r2_score": r2_score
+            }
+    return metrics
+
 def calculate_r2_score(y_pred, y_true) -> float:
     """
     Calculates the R^2 score of a model.
