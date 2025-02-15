@@ -1,7 +1,23 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+
 from sklearn.model_selection import KFold, train_test_split
 from typing import List, Dict
+
+def calculate_r2_score(y_pred, y_true) -> float:
+    """
+    Calculates the R^2 score of a model.
+
+    Args:
+        y_pred (np.ndarray): The predicted values.
+        y_true (np.ndarray): The true values.
+    """
+    eps = y_true - y_pred
+    rss = np.sum(eps ** 2)
+    tss = np.sum((y_true - y_true.mean()) ** 2)
+    r2 = 1 - (rss / tss)
+    return r2
 
 def convert_non_numeric_to_numeric(data:pd.DataFrame) -> pd.DataFrame:
     """
