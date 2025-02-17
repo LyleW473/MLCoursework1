@@ -2,7 +2,7 @@ import pandas as pd
 from typing import Union
 
 class Normaliser:
-    def calculate_mean(self, data:pd.DataFrame) -> pd.Series:
+    def calculate_mean(self, data:pd.DataFrame) -> float:
         """
         Calculates the mean of a DataFrame.
 
@@ -12,7 +12,7 @@ class Normaliser:
         mean = data.mean()
         return mean
 
-    def calculate_std(self, data:pd.DataFrame) -> pd.Series:
+    def calculate_std(self, data:pd.DataFrame) -> float:
         """
         Calculates the standard deviation of a DataFrame.
 
