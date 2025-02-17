@@ -3,6 +3,7 @@ import xgboost as xgb
 import lightgbm as lgb
 import numpy as np
 import os
+import json
 
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
@@ -33,6 +34,11 @@ if __name__ == "__main__":
 
     # Standardising the data
     normaliser = Normaliser()
+
+    with open(f"{TRAINING_STATISTICS_DIR}/stats.json", "r") as f:
+        stats_for_each_column = json.load(f)
+    print(stats_for_each_column)
+
     for column in numeric_columns:
         print(data[column])
         data[column] = normaliser.standardise(data[column])
