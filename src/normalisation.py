@@ -22,7 +22,7 @@ class Normaliser:
         std = data.std()
         return std
     
-    def standardise(self, data:pd.DataFrame, mean:Union[pd.Series, None]=None, std:Union[pd.Series, None]=None) -> pd.DataFrame:
+    def standardise(self, data:pd.DataFrame, mean:Union[float, None]=None, std:Union[float, None]=None) -> pd.DataFrame:
         """
         Standardises a DataFrame by subtracting the mean and dividing by the standard deviation.
 

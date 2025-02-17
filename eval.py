@@ -41,7 +41,11 @@ if __name__ == "__main__":
 
     for column in numeric_columns:
         print(data[column])
-        data[column] = normaliser.standardise(data[column])
+        training_dataset_column_stats = stats_for_each_column[column]
+        train_mean = training_dataset_column_stats["mean"]
+        train_std = training_dataset_column_stats["std"]
+
+        data[column] = normaliser.standardise(data[column], mean=train_mean, std=train_std)
         print("after", data[column])
 
     best_hyperparameters = {
