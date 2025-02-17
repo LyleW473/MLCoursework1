@@ -16,6 +16,7 @@ from src.constants import *
 
 if __name__ == "__main__":
     data = pd.read_csv(DATA_PATH)
+    test_data = pd.read_csv(TEST_DATA_PATH)
 
     # Find columns
     all_columns = data.columns.tolist()
@@ -31,47 +32,86 @@ if __name__ == "__main__":
     # Converting non-numeric features to numerical features
     data = convert_non_numeric_to_numeric(data=data)
     print(data)
+    test_data = convert_non_numeric_to_numeric(data=test_data)
+    print(test_data)
+
+    # Split data into training and test sets
+    train_data, local_test_data = train_test_split(data, test_size=0.2, random_state=REPRODUCIBILITY_SEED)
+    print(f"Training set size: {len(train_data)} | Test set size: {len(local_test_data)}")    
+    print()
 
     # Standardising the data
-    normaliser = Normaliser()
-
     with open(f"{TRAINING_STATISTICS_DIR}/stats.json", "r") as f:
         stats_for_each_column = json.load(f)
     print(stats_for_each_column)
 
+    normaliser = Normaliser()
     for column in numeric_columns:
         print(data[column])
-        training_dataset_column_stats = stats_for_each_column[column]
-        train_mean = training_dataset_column_stats["mean"]
-        train_std = training_dataset_column_stats["std"]
+        train_data_column_stats = stats_for_each_column[column]
+        train_data_column_mean = train_data_column_stats["mean"]
+        train_data_column_std = train_data_column_stats["std"]
 
-        data[column] = normaliser.standardise(data[column], mean=train_mean, std=train_std)
-        print("after", data[column])
+        train_data[column] = normaliser.standardise(train_data[column], mean=train_data_column_mean, std=train_data_column_std)
+        stats_for_each_column[column] = {
+            "mean": train_data_column_mean,
+            "std": train_data_column_std
+        }
 
-    best_hyperparameters = {
-        "objective":"reg:squarederror", 
-        "n_estimators": 1000,
-        "max_depth": 5,
-        "learning_rate": 0.1, 
-        "random_state": REPRODUCIBILITY_SEED
-    } # TODO: Load the best hyperparameters from the hyperparameter tuning process
+        # Normalise (local) test set using the mean and std of the training data
+        local_test_data[column] = normaliser.standardise(local_test_data[column], mean=train_data_column_mean, std=train_data_column_std)
+        print("after", train_data[column])
+
+        # Normalise the test data using the mean and std of the training data
+        test_data[column] = normaliser.standardise(test_data[column], mean=train_data_column_mean, std=train_data_column_std)
+
+    kfold_data = get_kfold_data(data=train_data, k=NUM_FOLDS, reproducibility_seed=REPRODUCIBILITY_SEED)
     
-    model = xgb.XGBRegressor(**best_hyperparameters)
+    # Create a model for each fold.
+    predictions_per_model = {}
+    for fold in range(NUM_FOLDS):
+        with open(f"{BEST_HYPERPARAMETERS_DIR}/xgb/fold_{fold+1}.json", "r") as f:
+            best_hyperparameters = json.load(f)
+
+        # Extract data for the fold
+        fold_data = kfold_data[fold]
+        fold_train_data = fold_data["train"]
+        fold_val_data = fold_data["val"]
+
+        fold_train_y = fold_train_data["outcome"]
+        fold_val_y = fold_val_data["outcome"]
+        
+        fold_train_x = fold_train_data.drop(columns=["outcome"])
+        fold_val_x = fold_val_data.drop(columns=["outcome"])
+
+        # Train the model
+        fold_model = xgb.XGBRegressor(**best_hyperparameters)
+        fold_model.fit(fold_train_x, fold_train_y)
+
+
+        preds = fold_model.predict(fold_val_x)
+
+        # Calculate metrics
+        metrics = calculate_metrics(targets=fold_val_y, preds=preds)
+        mae = metrics["mae"]
+        mse = metrics["mse"]
+        rmse = metrics["rmse"]
+        pcc = metrics["pcc"]
+        spearman_r = metrics["spearman_r"]
+        r2_score = metrics["r2_score"]
+
+        print(f"Fold: {fold+1}/{NUM_FOLDS}")
+        print(f"MAE: {mae}")
+        print(f"MSE: {mse}")
+        print(f"RMSE: {rmse}")
+        print(f"PCC: {pcc}")
+        print(f"Spearman R: {spearman_r}")
+        print(f"R2 Score: {r2_score}")
+        print()
 
     # ----------------------------------------------------------------
     # Base code:
 
-    # Random 80/20 train/validation split
-    trn, tst = train_test_split(data, test_size=0.2, random_state=123)
-
-    # Train a linear model
-    X_trn = trn.drop(columns=['outcome'])
-    y_trn = trn['outcome']
-    X_tst = tst.drop(columns=['outcome'])
-    y_tst = tst['outcome']
-
-    model.fit(X_trn, y_trn)
-    yhat_lm = model.predict(X_tst)
 
     # Format submission
     out = pd.DataFrame({'yhat': yhat_lm})
