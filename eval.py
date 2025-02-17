@@ -65,11 +65,16 @@ if __name__ == "__main__":
         # Normalise the test data using the mean and std of the training data
         test_data[column] = normaliser.standardise(test_data[column], mean=train_data_column_mean, std=train_data_column_std)
 
+    # Get the K-Fold data for training best hyperparameter models.
     kfold_data = get_kfold_data(data=train_data, k=NUM_FOLDS, reproducibility_seed=REPRODUCIBILITY_SEED)
     
     # Create a model for each fold.
-    val_predictions_per_model = {}
+    local_test_predictions_per_model = {}
     test_predictions_per_model = {}
+    local_test_data_y = np.array(local_test_data["outcome"])
+    local_test_data_x = local_test_data.drop(columns=["outcome"])
+    print(local_test_data_y)
+
     for fold in range(NUM_FOLDS):
         with open(f"{BEST_HYPERPARAMETERS_DIR}/xgb/fold_{fold+1}.json", "r") as f:
             best_hyperparameters = json.load(f)
@@ -80,7 +85,7 @@ if __name__ == "__main__":
         fold_val_data = fold_data["val"]
 
         fold_train_y = fold_train_data["outcome"]
-        fold_val_y = fold_val_data["outcome"]
+        fold_val_y = np.array(fold_val_data["outcome"])
         
         fold_train_x = fold_train_data.drop(columns=["outcome"])
         fold_val_x = fold_val_data.drop(columns=["outcome"])
@@ -109,9 +114,9 @@ if __name__ == "__main__":
         print()
 
         # Predict on the local test set
-        local_test_data_y = local_test_data["outcome"]
-        local_test_data_x = local_test_data.drop(columns=["outcome"])
         local_test_preds = fold_model.predict(local_test_data_x)
+        local_test_predictions_per_model[f"fold_{fold+1}"] = local_test_preds
+
         local_test_metrics = calculate_metrics(targets=local_test_data_y, preds=local_test_preds)
         local_test_mae = local_test_metrics["mae"]
         local_test_mse = local_test_metrics["mse"]
@@ -135,6 +140,32 @@ if __name__ == "__main__":
 
     # ----------------------------------------------------------------
     # Base code:
+
+    # Checking the metrics for bagging
+    local_test_predictions = pd.DataFrame(local_test_predictions_per_model)
+    print(local_test_predictions)
+    local_test_predictions["yhat"] = local_test_predictions.mean(axis=1)
+    local_test_predictions.drop(columns=[f"fold_{i+1}" for i in range(NUM_FOLDS)], inplace=True)
+    print(local_test_data_y)
+    local_test_predictions["actual"] = local_test_data_y
+    print(local_test_predictions)
+
+    metrics = calculate_metrics(targets=local_test_predictions["actual"], preds=local_test_predictions["yhat"])
+    mae = metrics["mae"]
+    mse = metrics["mse"]
+    rmse = metrics["rmse"]
+    pcc = metrics["pcc"]
+    spearman_r = metrics["spearman_r"]
+    r2_score = metrics["r2_score"]
+
+    print(f"Bagging Metrics")
+    print(f"MAE: {mae}")
+    print(f"MSE: {mse}")
+    print(f"RMSE: {rmse}")
+    print(f"PCC: {pcc}")
+    print(f"Spearman R: {spearman_r}")
+    print(f"R2 Score: {r2_score}")
+    print()
 
     # Generate final predictions by averaging the predictions from each model
     out = pd.DataFrame(test_predictions_per_model)
