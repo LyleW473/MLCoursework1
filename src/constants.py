@@ -3,6 +3,7 @@ MAIN_DATA_DIR = "data"
 MAIN_DATA_FILE = "CW1_train.csv"
 DATA_PATH = f"{MAIN_DATA_DIR}/{MAIN_DATA_FILE}"
 SUBMISSIONS_DIR = f"submissions"
+BEST_HYPERPARAMETERS_DIR = f"model_best_hyperparameters"
 
 # Constants
 EPS = 1e-8
