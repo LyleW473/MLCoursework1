@@ -68,7 +68,8 @@ if __name__ == "__main__":
     kfold_data = get_kfold_data(data=train_data, k=NUM_FOLDS, reproducibility_seed=REPRODUCIBILITY_SEED)
     
     # Create a model for each fold.
-    predictions_per_model = {}
+    val_predictions_per_model = {}
+    test_predictions_per_model = {}
     for fold in range(NUM_FOLDS):
         with open(f"{BEST_HYPERPARAMETERS_DIR}/xgb/fold_{fold+1}.json", "r") as f:
             best_hyperparameters = json.load(f)
@@ -128,26 +129,35 @@ if __name__ == "__main__":
         print(f"R2 Score: {local_test_r2_score}")
         print()
 
+        # Predict on hidden test set
+        test_preds = fold_model.predict(test_data)
+        test_predictions_per_model[f"fold_{fold+1}"] = test_preds
+
     # ----------------------------------------------------------------
     # Base code:
 
+    # Generate final predictions by averaging the predictions from each model
+    out = pd.DataFrame(test_predictions_per_model)
+    print(out)
+    out["yhat"] = out.mean(axis=1)
+    out.drop(columns=[f"fold_{i+1}" for i in range(NUM_FOLDS)], inplace=True)
+    print(out)
 
-    # Format submission
-    out = pd.DataFrame({'yhat': yhat_lm})
     os.makedirs(SUBMISSIONS_DIR, exist_ok=True)
-    save_path = f'{SUBMISSIONS_DIR}/CW1_submission.csv'
+    save_path = f'{SUBMISSIONS_DIR}/CW1_submission_K22039642.csv'
     out.to_csv(save_path, index=False)
 
-    # Read in the submission
-    yhat_lm = np.array(pd.read_csv(save_path)['yhat'])
+    # # Read in the submission with the actual outcomes
+    # actual_tst = pd.read_csv(f"INSERT-PATH-TO-TEST-SET-WITH-ACTUAL-OUTCOMES")
+    # yhat_lm = np.array(pd.read_csv(save_path)['yhat'])
 
-    # This is the R^2 function
-    def r2_fn(yhat):
-        eps = y_tst - yhat
-        rss = np.sum(eps ** 2)
-        tss = np.sum((y_tst - y_tst.mean()) ** 2)
-        r2 = 1 - (rss / tss)
-        return r2
+    # # This is the R^2 function
+    # def r2_fn(yhat):
+    #     eps = actual_tst - yhat
+    #     rss = np.sum(eps ** 2)
+    #     tss = np.sum((actual_tst - actual_tst.mean()) ** 2)
+    #     r2 = 1 - (rss / tss)
+    #     return r2
 
-    # Evaluate
-    print(r2_fn(yhat_lm))
+    # # Evaluate
+    # print(r2_fn(yhat_lm))
