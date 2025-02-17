@@ -87,12 +87,10 @@ if __name__ == "__main__":
         # Train the model
         fold_model = xgb.XGBRegressor(**best_hyperparameters)
         fold_model.fit(fold_train_x, fold_train_y)
-
-
-        preds = fold_model.predict(fold_val_x)
+        val_preds = fold_model.predict(fold_val_x)
 
         # Calculate metrics
-        metrics = calculate_metrics(targets=fold_val_y, preds=preds)
+        metrics = calculate_metrics(targets=fold_val_y, preds=val_preds)
         mae = metrics["mae"]
         mse = metrics["mse"]
         rmse = metrics["rmse"]
@@ -107,6 +105,27 @@ if __name__ == "__main__":
         print(f"PCC: {pcc}")
         print(f"Spearman R: {spearman_r}")
         print(f"R2 Score: {r2_score}")
+        print()
+
+        # Predict on the local test set
+        local_test_data_y = local_test_data["outcome"]
+        local_test_data_x = local_test_data.drop(columns=["outcome"])
+        local_test_preds = fold_model.predict(local_test_data_x)
+        local_test_metrics = calculate_metrics(targets=local_test_data_y, preds=local_test_preds)
+        local_test_mae = local_test_metrics["mae"]
+        local_test_mse = local_test_metrics["mse"]
+        local_test_rmse = local_test_metrics["rmse"]
+        local_test_pcc = local_test_metrics["pcc"]
+        local_test_spearman_r = local_test_metrics["spearman_r"]
+        local_test_r2_score = local_test_metrics["r2_score"]
+        
+        print(f"Local Test Set Metrics")
+        print(f"MAE: {local_test_mae}")
+        print(f"MSE: {local_test_mse}")
+        print(f"RMSE: {local_test_rmse}")
+        print(f"PCC: {local_test_pcc}")
+        print(f"Spearman R: {local_test_spearman_r}")
+        print(f"R2 Score: {local_test_r2_score}")
         print()
 
     # ----------------------------------------------------------------
