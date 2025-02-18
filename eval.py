@@ -79,6 +79,9 @@ if __name__ == "__main__":
         with open(f"{BEST_HYPERPARAMETERS_DIR}/xgb/fold_{fold+1}.json", "r") as f:
             best_hyperparameters = json.load(f)
 
+        with open(f"{BEST_HYPERPARAMETERS_DIR}/xgb/fold_{fold+1}_selected_features.json", "r") as f:
+            best_selected_features = json.load(f) 
+
         # Extract data for the fold
         fold_data = kfold_data[fold]
         fold_train_data = fold_data["train"]
@@ -89,6 +92,12 @@ if __name__ == "__main__":
         
         fold_train_x = fold_train_data.drop(columns=["outcome"])
         fold_val_x = fold_val_data.drop(columns=["outcome"])
+
+        fold_train_x = fold_train_x[best_selected_features]
+        fold_val_x = fold_val_x[best_selected_features]
+
+        local_test_data_x_for_model = local_test_data_x[best_selected_features]
+        test_data_x_for_model = test_data[best_selected_features]
 
         # Train the model
         fold_model = xgb.XGBRegressor(**best_hyperparameters)
@@ -114,7 +123,7 @@ if __name__ == "__main__":
         print()
 
         # Predict on the local test set
-        local_test_preds = fold_model.predict(local_test_data_x)
+        local_test_preds = fold_model.predict(local_test_data_x_for_model)
         local_test_predictions_per_model[f"fold_{fold+1}"] = local_test_preds
 
         local_test_metrics = calculate_metrics(targets=local_test_data_y, preds=local_test_preds)
@@ -135,7 +144,7 @@ if __name__ == "__main__":
         print()
 
         # Predict on hidden test set
-        test_preds = fold_model.predict(test_data)
+        test_preds = fold_model.predict(test_data_x_for_model)
         test_predictions_per_model[f"fold_{fold+1}"] = test_preds
 
     # ----------------------------------------------------------------

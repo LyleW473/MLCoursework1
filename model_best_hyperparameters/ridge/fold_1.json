@@ -1,1 +1,1 @@
-{"alpha": 0.09996100975689141, "solver": "saga", "fit_intercept": false}
+{"alpha": 0.08609910915994648, "solver": "sag", "fit_intercept": false}

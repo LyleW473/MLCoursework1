@@ -96,6 +96,8 @@ def get_kfold_data(data:pd.DataFrame, k:int, reproducibility_seed:int=42) -> Lis
         print(f"Fold: {i}/{k}")
         print(f"Train shape: {train.shape} | {train.shape[0] / data.shape[0] * 100:.2f}%")
         print(f"Validation shape: {val.shape} | {val.shape[0] / data.shape[0] * 100:.2f}%")
+        print(train.columns)
+        print(val.columns)
         print()
 
         kfold_data.append(fold_data)

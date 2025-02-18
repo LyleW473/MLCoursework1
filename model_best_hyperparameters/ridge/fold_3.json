@@ -1,1 +1,1 @@
-{"alpha": 0.09918565313955605, "solver": "sparse_cg", "fit_intercept": false}
+{"alpha": 0.07787683163359059, "solver": "sag", "fit_intercept": false}

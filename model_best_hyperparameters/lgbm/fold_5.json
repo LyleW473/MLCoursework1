@@ -1,1 +1,1 @@
-{"learning_rate": 0.041601962084063485, "num_leaves": 944, "subsample": 0.46507626094208165, "colsample_bytree": 0.9105515731241552, "min_data_in_leaf": 100}
+{"learning_rate": 0.04152185578142371, "num_leaves": 1017, "subsample": 0.5128426639228317, "colsample_bytree": 0.9039894149692504, "min_data_in_leaf": 83}
