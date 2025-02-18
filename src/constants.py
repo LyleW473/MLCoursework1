@@ -12,4 +12,4 @@ TRAINING_STATISTICS_DIR = f"training_statistics"
 EPS = 1e-8
 REPRODUCIBILITY_SEED = 42
 NUM_FOLDS = 5
-N_TRIALS = 10 # Number of trials for hyperparameter tuning
+N_TRIALS = 100 # Number of trials for hyperparameter tuning
