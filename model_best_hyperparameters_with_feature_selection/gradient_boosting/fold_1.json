@@ -1,0 +1,1 @@
+{"loss": "squared_error", "criterion": "squared_error", "learning_rate": 0.09928627865615468, "subsample": 0.5689605676271026, "max_depth": 3, "min_samples_split": 3, "min_samples_leaf": 1, "max_features": "sqrt", "max_leaf_nodes": 580}

@@ -1,1 +1,1 @@
-{"alpha": 0.008003343633555664, "fit_intercept": true, "selection": "cyclic", "warm_start": false}
+{"alpha": 0.01857695147432442, "fit_intercept": false, "selection": "random", "warm_start": true}

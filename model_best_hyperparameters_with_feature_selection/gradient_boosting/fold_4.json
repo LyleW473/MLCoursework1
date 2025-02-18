@@ -1,0 +1,1 @@
+{"loss": "huber", "criterion": "friedman_mse", "learning_rate": 0.06847138327373646, "subsample": 0.8020953971785622, "max_depth": 3, "min_samples_split": 4, "min_samples_leaf": 2, "max_features": "sqrt", "max_leaf_nodes": 232}

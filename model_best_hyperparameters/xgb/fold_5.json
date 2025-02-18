@@ -1,1 +1,1 @@
-{"eta": 0.0698243135287244, "gamma": 0.43134287639048496, "max_depth": 4, "min_child_weight": 3, "subsample": 0.8829148680975475, "colsample_bytree": 0.9506783496348653}
+{"eta": 0.08743726444074995, "gamma": 0.36016871409858636, "max_depth": 3, "min_child_weight": 5, "subsample": 0.9784995538736205, "colsample_bytree": 0.9624912187413414}

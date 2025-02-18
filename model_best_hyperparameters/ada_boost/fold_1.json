@@ -1,1 +1,1 @@
-{"n_estimators": 99, "loss": "linear", "learning_rate": 0.08681594646186346}
+{"n_estimators": 92, "loss": "square", "learning_rate": 0.09796851024007176}

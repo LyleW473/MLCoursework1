@@ -13,3 +13,4 @@ EPS = 1e-8
 REPRODUCIBILITY_SEED = 42
 NUM_FOLDS = 5
 N_TRIALS = 100 # Number of trials for hyperparameter tuning
+USE_FEATURE_SELECTION = False
