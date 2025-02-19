@@ -1,0 +1,1 @@
+{"loss": "huber", "criterion": "squared_error", "learning_rate": 0.06562263496454646, "subsample": 0.9573940382134581, "max_depth": 5, "min_samples_split": 6, "min_samples_leaf": 6, "max_features": "log2", "max_leaf_nodes": 978}
