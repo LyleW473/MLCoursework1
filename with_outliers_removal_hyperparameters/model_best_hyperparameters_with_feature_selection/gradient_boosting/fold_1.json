@@ -1,0 +1,1 @@
+{"loss": "absolute_error", "criterion": "friedman_mse", "learning_rate": 0.05167254341344138, "subsample": 0.87907904807685, "max_depth": 4, "min_samples_split": 8, "min_samples_leaf": 8, "max_features": "sqrt", "max_leaf_nodes": 21}

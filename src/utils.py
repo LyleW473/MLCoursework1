@@ -8,6 +8,23 @@ from typing import List, Dict
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from scipy.stats import pearsonr, spearmanr
 
+def is_outlier(row:pd.Series, numeric_columns:List[str], mean_per_column:Dict[str, float], std_per_column:Dict[str, float]) -> bool:
+    """
+    Checks if a row is an outlier based on the z-score of the numeric columns.
+
+    Args:
+        row (pd.Series): The row to check.
+        numeric_columns (List[str]): The numeric columns to check.
+        mean_per_column (Dict[str, float]): The mean of each numeric column.
+        std_per_column (Dict[str, float]): The standard deviation of each numeric column.
+    """
+    for col in numeric_columns:
+        mean = mean_per_column[col]
+        std = std_per_column[col]
+        if abs(row[col] - mean) > 3 * std:
+            return True
+    return False
+
 def calculate_metrics(targets:np.ndarray, preds:np.ndarray) -> Dict[str, float]:
     """
     Calculates the Mean Absolute Error, Mean Squared Error, Root Mean Squared Error,
